@@ -1,5 +1,7 @@
-// 瑜伽動作資料
-const yogaPoses = [
+import { YogaAction } from '../types';
+
+// 模擬數據庫數據
+export const yogaActions: YogaAction[] = [
     {
         id: 1,
         name: "山式站立姿勢",
@@ -242,43 +244,69 @@ const yogaPoses = [
     }
 ];
 
-// 難度對應的中文
-const difficultyMap = {
-    'beginner': '初級',
-    'intermediate': '中級',
-    'advanced': '高級'
+// 搜尋和篩選瑜伽動作
+export const getYogaActions = (
+  page: number = 1,
+  limit: number = 20,
+  search: string = '',
+  difficulty: string = '',
+  sort: string = 'id',
+  order: string = 'asc'
+) => {
+  // 確保 limit 不超過 5
+  const safeLimit = Math.min(limit, 20);
+  
+  // 篩選結果
+  let filteredActions = [...yogaActions];
+  
+  // 搜尋關鍵字
+  if (search) {
+    const searchLower = search.toLowerCase();
+    filteredActions = filteredActions.filter(
+      action => action.name.toLowerCase().includes(searchLower) || 
+                action.name_en.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  // 難度篩選
+  if (difficulty) {
+    filteredActions = filteredActions.filter(
+      action => action.difficulty === difficulty
+    );
+  }
+  
+  // 排序
+  filteredActions.sort((a, b) => {
+    if (sort === 'name') {
+      return order === 'asc' 
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    } else if (sort === 'difficulty') {
+      const difficultyOrder = { 'beginner': 1, 'intermediate': 2, 'advanced': 3 };
+      return order === 'asc'
+        ? difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]
+        : difficultyOrder[b.difficulty] - difficultyOrder[a.difficulty];
+    } else {
+      // 默認按 ID 排序
+      return order === 'asc' ? a.id - b.id : b.id - a.id;
+    }
+  });
+  
+  // 分頁
+  const startIndex = (page - 1) * safeLimit;
+  const paginatedActions = filteredActions.slice(startIndex, startIndex + safeLimit);
+  
+  return {
+    items: paginatedActions,
+    pagination: {
+      page,
+      limit: safeLimit,
+      total: filteredActions.length
+    }
+  };
 };
 
-// 效果分類標籤
-const effectTags = {
-    'strength': '增強力量',
-    'flexibility': '提升柔軟度',
-    'balance': '改善平衡',
-    'relax': '放鬆減壓'
-};
-
-// 根據效果描述為每個瑜伽動作添加效果標籤
-yogaPoses.forEach(pose => {
-    pose.effectTags = [];
-    
-    if (pose.effect.includes('強化') || pose.effect.includes('力量')) {
-        pose.effectTags.push('strength');
-    }
-    
-    if (pose.effect.includes('伸展') || pose.effect.includes('靈活性') || pose.effect.includes('柔軟')) {
-        pose.effectTags.push('flexibility');
-    }
-    
-    if (pose.effect.includes('平衡')) {
-        pose.effectTags.push('balance');
-    }
-    
-    if (pose.effect.includes('放鬆') || pose.effect.includes('舒緩') || pose.effect.includes('減壓')) {
-        pose.effectTags.push('relax');
-    }
-    
-    // 如果沒有標籤，添加一個預設標籤
-    if (pose.effectTags.length === 0) {
-        pose.effectTags.push('balance');
-    }
-}); 
+// 根據 ID 獲取瑜伽動作
+export const getYogaActionById = (id: number) => {
+  return yogaActions.find(action => action.id === id);
+}; 
