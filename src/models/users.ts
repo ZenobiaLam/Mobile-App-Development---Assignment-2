@@ -6,7 +6,7 @@ let users: User[] = [
   {
     id: 1,
     username: 'demo',
-    password: '$2b$10$7Jrc6YvrdtT3mRIDvAw3DOQ/grEYCW6DWvJeARO2YfUYU7ZOCV1v2' // "password"
+    password: '$2b$10$x0YHW7bxdkm.gRr2y61pTOsQNzypEmzXs2X6zpJnr9YHZG3FDWKHy' // "password"
   }
 ];
 
@@ -32,6 +32,7 @@ export const createUser = async (username: string, password: string): Promise<Us
   
   // 密碼加鹽哈希
   const hashedPassword = await bcrypt.hash(password, 10);
+  console.log(hashedPassword)
   
   // 創建新用戶
   const newUser: User = {
