@@ -6,7 +6,7 @@ export const getYogaActionsList = (req: Request, res: Response) => {
   try {
     // 獲取查詢參數
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 3;
+    const limit = parseInt(req.query.limit as string) || 20;
     const search = req.query.search as string || '';
     const difficulty = req.query.difficulty as string || '';
     const sort = req.query.sort as string || 'id';

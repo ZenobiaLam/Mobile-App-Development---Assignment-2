@@ -59,7 +59,7 @@ npm start
 ### 基礎 URL
 
 ```
-http://localhost:3000/api
+http://localhost:3001/api
 ```
 
 ### 瑜伽動作 API

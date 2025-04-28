@@ -82,12 +82,21 @@ export const login = async (req: Request, res: Response) => {
 // 檢查登入狀態
 export const checkAuth = (req: Request, res: Response) => {
   try {
-    // 此中間件已經驗證了令牌並附加了用戶ID
-    const userId = req.body.userId;
+    // 從請求頭中獲取 Authorization 頭
+    const authHeader = req.header('Authorization');
+    const token = authHeader && authHeader.split(' ')[1];
     
-    if (!userId) {
-      return res.status(401).json({ error: '未提供有效的用戶ID' });
+    if (!token) {
+      return res.status(401).json({ error: '未提供認證令牌' });
     }
+    
+    // 從令牌中驗證並獲取用戶 ID
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return res.status(401).json({ error: '無效或過期的令牌' });
+    }
+    
+    const userId = decoded.userId;
     
     // 查找用戶
     const user = findUserById(userId);
